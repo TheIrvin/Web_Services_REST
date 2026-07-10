@@ -1,116 +1,156 @@
 # Consumo de Web Services REST con Angular 22
 
-Práctica de la asignatura Aplicaciones Web — Ingeniería de Software — UTEQ.
+**Práctica de la asignatura Aplicaciones Web — Ingeniería de Software — UTEQ**
 
-Versiones usadas (evidenciar con `node --version` y `ng version`):
+Este proyecto implementa una arquitectura moderna de **Angular 22** utilizando **Zoneless**, **Signals** y **`httpResource`**, conectándose de forma reactiva a un backend simulado mediante **JSON Server**. Para resolver las restricciones de intercambio de recursos de origen cruzado (**CORS**), se utiliza un **proxy de desarrollo** configurado en Angular.
 
-- Node.js: v22.x (o superior)
-- Angular CLI / Core: 22.x
-- TypeScript: 6.x
 
-## Estructura del proyecto
 
-```
-consumo-rest/
-├── proxy.conf.json              # Paso 7: proxy /api -> API real (resuelve CORS en dev)
-├── src/
-│   ├── index.html
-│   ├── main.ts                  # bootstrap zoneless de la app
-│   ├── styles.css
-│   └── app/
-│       ├── app.config.ts        # Paso 1: provideHttpClient()
-│       ├── producto.model.ts    # Paso 2: interfaz Producto
-│       ├── producto.service.ts  # Paso 3 + 6: CRUD tipado y manejo de errores
-│       ├── lista-productos.component.ts   # Paso 4: httpResource + eliminar (DELETE)
-│       ├── nuevo-producto.component.ts    # Paso 5: crear (POST)
-│       └── app.component.ts     # integra listado + creación + eliminación
-```
+---
 
-## Cómo ejecutar el proyecto
+# Guía de Ejecución Paso a Paso
 
-**1. Verificar versiones (evidencia requerida en la entrega):**
+Para ejecutar correctamente la aplicación es necesario trabajar con **dos terminales**.
 
-```bash
-node --version   # debe reportar v22.x o superior
-ng version       # @angular/core y @angular/cli deben coincidir en 22.x
-```
+## Paso 1. Instalar las dependencias
 
-**2. Instalar dependencias:**
+Abra una terminal en la carpeta raíz del proyecto y ejecute:
 
 ```bash
 npm install
 ```
 
-**3. Levantar una API REST de prueba en `http://localhost:8080`** que exponga
-`/api/productos` con las operaciones GET/POST/PUT/DELETE (por ejemplo, un
-`json-server` con un `db.json` que contenga un arreglo `productos`, o su propio
-backend). Ejemplo rápido con json-server:
+---
+
+## Paso 2. Levantar el servidor de datos (Terminal 1)
+
+Ejecute el servidor REST utilizando **JSON Server**:
 
 ```bash
 npx json-server --watch db.json --port 8080
 ```
 
-donde `db.json` podría ser:
+El archivo `db.json` inicia con la colección vacía:
 
 ```json
 {
-  "productos": [
-    { "id": 1, "nombre": "Mouse", "precio": 12.5, "disponible": true },
-    { "id": 2, "nombre": "Teclado", "precio": 25.9, "disponible": true }
-  ]
+  "productos": []
 }
 ```
 
-**4. Primero, evidencia del error de CORS (sin proxy):**
+Esto permite observar únicamente los registros creados durante la práctica.
+
+---
+
+## Paso 3. Evidencia del error de CORS (Opcional)
+
+Para evidenciar el problema de CORS, abra una segunda terminal y ejecute Angular sin proxy:
 
 ```bash
 ng serve -o
 ```
 
-Con la API corriendo en el puerto 8080 y el frontend en el 4200, abra la
-consola del navegador: al listar productos verá el error de CORS (status 0)
-descrito en el Paso 6 de la guía. Tome la captura de este error para el
-entregable.
+Al ingresar a:
 
-**5. Ahora, con el proxy (soluciona el CORS en desarrollo):**
+```
+http://localhost:4200
+```
+
+La consola del navegador mostrará un error de comunicación (**Status 0 / Error de CORS**), el cual será capturado por el bloque de control de flujo:
+
+```ts
+@else if (productos.error())
+```
+---
+
+## Paso 4. Ejecutar Angular utilizando el Proxy (Terminal 2)
+
+Detenga el servidor anterior con:
+
+```text
+Ctrl + C
+```
+
+Luego inicie nuevamente Angular utilizando el archivo de configuración del proxy:
 
 ```bash
 ng serve --proxy-config proxy.conf.json -o
-# o, equivalentemente:
-npm start
 ```
 
-Abra `http://localhost:4200`: la lista de productos debe cargar sin error de
-CORS, ya que todas las peticiones a `/api/...` son redirigidas por el proxy
-hacia `http://localhost:8080` en el mismo origen del navegador. Tome la
-captura de la vista ya funcionando para el entregable.
+Ahora todas las peticiones dirigidas a:
 
-**6. Probar las operaciones del entregable:**
+```
+/api
+```
 
-- (a) Listar: la sección "Productos" usa `httpResource`, mostrando "Cargando..."
-  mientras carga y un mensaje de error si la petición falla.
-- (b) Crear: use el formulario "Nuevo producto" (POST); al guardar, la lista
-  se refresca automáticamente.
-- (c) Eliminar: use el botón "Eliminar" de cada producto (DELETE); la lista
-  se refresca llamando a `productos.reload()`.
-- (d) Proxy: confirmado en los pasos 4 y 5 anteriores.
+serán redireccionadas automáticamente a:
 
-## Evidencia de CORS para el entregable
+```
+http://localhost:8080
+```
 
-Adjunte junto a este README:
+eliminando las restricciones de **CORS**.
 
-1. Captura de la consola del navegador mostrando el error de CORS al correr
-   `ng serve -o` sin el proxy (paso 4).
-2. Captura de la aplicación funcionando correctamente al correr con
-   `ng serve --proxy-config proxy.conf.json -o` (paso 5).
+---
 
-## Checklist de la rúbrica (10.0 puntos)
+# Operaciones Implementadas
 
-| Criterio | Dónde se cumple en este repo |
-|---|---|
-| Configuración del cliente HTTP y del proxy (2.0) | `src/app/app.config.ts`, `proxy.conf.json` |
-| Servicio con GET/POST/DELETE tipadas (3.0) | `src/app/producto.service.ts` (incluye también PUT) |
-| Lectura reactiva con httpResource, estados carga/error (2.5) | `src/app/lista-productos.component.ts` |
-| Manejo de errores por código de estado (1.5) | `manejarError()` en `producto.service.ts` |
-| Evidencia de diagnóstico y resolución de CORS (1.0) | Capturas descritas arriba (a agregar por el estudiante) |
+## Lectura Reactiva (GET)
 
+La sección **Productos** consume la información mediante `httpResource`.
+
+Características:
+
+- Estado de carga ("Cargando...")
+- Actualización reactiva
+- Manejo visual de errores cuando el servidor no responde
+
+---
+
+## Creación de Productos (POST)
+
+El formulario **Nuevo Producto** envía información mediante peticiones HTTP POST.
+
+Al crear correctamente un registro:
+
+- JSON Server genera automáticamente un ID.
+- La interfaz muestra el mensaje:
+
+```text
+Creado con id [ID_GENERADO]
+```
+
+---
+
+## Eliminación de Productos (DELETE)
+
+Cada producto posee un botón **Eliminar**.
+
+Después de una eliminación exitosa se ejecuta:
+
+```ts
+this.productos.reload()
+```
+
+permitiendo actualizar automáticamente la lista sin recargar la página.
+
+---
+
+
+
+# Tecnologías Utilizadas
+
+- Angular 22
+- TypeScript
+- Signals
+- httpResource
+- JSON Server
+- HTTP Client
+- Proxy de Angular
+- CSS (Flexbox y Grid)
+
+---
+
+# Objetivo de la Práctica
+
+Implementar una aplicación Angular moderna capaz de consumir un servicio REST mediante operaciones **CRUD**, aplicando arquitectura reactiva con **Signals** y **httpResource**, además de resolver los problemas de **CORS** utilizando un **proxy de desarrollo**.
