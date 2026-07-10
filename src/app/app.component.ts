@@ -7,12 +7,24 @@ import { NuevoProductoComponent } from './nuevo-producto.component';
   standalone: true,
   imports: [ListaProductosComponent, NuevoProductoComponent],
   template: `
-    <h1>Consumo de Web Services REST con Angular 22</h1>
-    <p>Aplicaciones Web · Ingeniería de Software · UTEQ</p>
+    <div style="max-width: 1200px; margin: 0 auto; padding: 20px; font-family: system-ui, sans-serif;">
 
-    <app-nuevo-producto (creado)="lista().productos.reload()" />
+      <header style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1a202c; margin-bottom: 5px;">Consumo de Web Services REST con Angular 22</h1>
+      </header>
 
-    <app-lista-productos />
+      <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between;">
+
+        <section style="flex: 1 1 400px; background: #f7fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <app-nuevo-producto (creado)="lista().productos.reload()" />
+        </section>
+
+        <section style="flex: 1.5 1 500px; background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <app-lista-productos />
+        </section>
+
+      </div>
+    </div>
   `,
 })
 export class AppComponent {
