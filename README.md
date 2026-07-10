@@ -30,66 +30,17 @@ Ejecute el servidor REST utilizando **JSON Server**:
 npx json-server --watch db.json --port 8080
 ```
 
-El archivo `db.json` inicia con la colección vacía:
-
-```json
-{
-  "productos": []
-}
-```
-
-Esto permite observar únicamente los registros creados durante la práctica.
-
 ---
 
-## Paso 3. Evidencia del error de CORS (Opcional)
 
-Para evidenciar el problema de CORS, abra una segunda terminal y ejecute Angular sin proxy:
+## Paso 3. Ejecutar Angular utilizando el Proxy (Terminal 2)
 
-```bash
-ng serve -o
-```
 
-Al ingresar a:
-
-```
-http://localhost:4200
-```
-
-La consola del navegador mostrará un error de comunicación (**Status 0 / Error de CORS**), el cual será capturado por el bloque de control de flujo:
-
-```ts
-@else if (productos.error())
-```
----
-
-## Paso 4. Ejecutar Angular utilizando el Proxy (Terminal 2)
-
-Detenga el servidor anterior con:
-
-```text
-Ctrl + C
-```
-
-Luego inicie nuevamente Angular utilizando el archivo de configuración del proxy:
+Ejecutar el servidor de Angular utilizando el archivo de configuración del proxy:
 
 ```bash
 ng serve --proxy-config proxy.conf.json -o
 ```
-
-Ahora todas las peticiones dirigidas a:
-
-```
-/api
-```
-
-serán redireccionadas automáticamente a:
-
-```
-http://localhost:8080
-```
-
-eliminando las restricciones de **CORS**.
 
 ---
 
