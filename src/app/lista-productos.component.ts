@@ -57,7 +57,7 @@ export class ListaProductosComponent {
 
   productos = httpResource<Producto[]>(() => '/api/productos');
 
-  eliminar(id: number): void {
+  eliminar(id: string): void {
     this.servicio.eliminar(id).subscribe({
       next: () => this.productos.reload(),
       error: (e) => console.error('No se pudo eliminar:', e.status),

@@ -21,7 +21,7 @@ export class ProductoService {
   }
 
   // GET por id: obtiene un único recurso.
-  obtener(id: number): Observable<Producto> {
+  obtener(id: string): Observable<Producto> {
     return this.http
       .get<Producto>(`${this.base}/${id}`)
       .pipe(catchError((err) => this.manejarError(err)));
@@ -36,14 +36,14 @@ export class ProductoService {
   }
 
   // PUT: reemplaza por completo el recurso identificado por id.
-  actualizar(id: number, p: Producto): Observable<Producto> {
+  actualizar(id: string, p: Producto): Observable<Producto> {
     return this.http
       .put<Producto>(`${this.base}/${id}`, p)
       .pipe(catchError((err) => this.manejarError(err)));
   }
 
   // DELETE: elimina el recurso. Suele responder 204 No Content (sin cuerpo).
-  eliminar(id: number): Observable<void> {
+  eliminar(id: string): Observable<void> {
     return this.http
       .delete<void>(`${this.base}/${id}`)
       .pipe(catchError((err) => this.manejarError(err)));

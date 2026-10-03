@@ -1,107 +1,77 @@
-# Consumo de Web Services REST con Angular 22
+# Catálogo de productos con Angular 22
 
-**Práctica de la asignatura Aplicaciones Web — Ingeniería de Software — UTEQ**
+Aplicación local para practicar consumo de servicios REST con Angular. Lee, crea y elimina productos mediante una API JSON Server; Angular usa un proxy de desarrollo para enviar las peticiones a la API sin configurar CORS en el navegador.
 
-Este proyecto implementa una arquitectura moderna de **Angular 22** utilizando **Zoneless**, **Signals** y **`httpResource`**, conectándose de forma reactiva a un backend simulado mediante **JSON Server**. Para resolver las restricciones de intercambio de recursos de origen cruzado (**CORS**), se utiliza un **proxy de desarrollo** configurado en Angular.
+![Pantalla del catálogo y formulario de productos](Docs/productos.png)
 
+## Funciones
 
+- Muestra productos y sus estados de carga y error mediante `httpResource`.
+- Crea productos desde un formulario reactivo con `ngModel` y Signals.
+- Elimina productos y vuelve a cargar la lista sin refrescar la página.
+- Guarda los datos de prueba en `db.json` mediante JSON Server.
+- Centraliza las peticiones HTTP y el manejo de errores en `ProductoService`.
 
----
+La interfaz actual permite listar, crear y eliminar productos. El servicio también incluye operaciones para consultar y reemplazar un producto por su ID.
 
-# Guía de Ejecución Paso a Paso
+## Tecnologías
 
-Para ejecutar correctamente la aplicación es necesario trabajar con **dos terminales**.
+- Angular 22.2.1 y TypeScript 6
+- Angular Signals, `httpResource` y `HttpClient`
+- JSON Server 1.0.0-beta.15
+- Vitest y jsdom para pruebas unitarias
+- Node.js 22 o posterior
 
-## Paso 1. Instalar las dependencias
+## Instalación y ejecución
 
-Abra una terminal en la carpeta raíz del proyecto y ejecute:
-
-```bash
-npm install
-```
-
----
-
-## Paso 2. Levantar el servidor de datos (Terminal 1)
-
-Ejecute el servidor REST utilizando **JSON Server**:
-
-```bash
-npx json-server --watch db.json --port 8080
-```
-
----
-
-
-## Paso 3. Ejecutar Angular utilizando el Proxy (Terminal 2)
-
-
-Ejecutar el servidor de Angular utilizando el archivo de configuración del proxy:
+Instala las dependencias desde la raíz del repositorio:
 
 ```bash
-ng serve --proxy-config proxy.conf.json -o
+npm ci
 ```
 
----
+Inicia la API y Angular en dos terminales separadas.
 
-# Operaciones Implementadas
+**Terminal 1 — API local:**
 
-## Lectura Reactiva (GET)
+```bash
+npm run api
+```
 
-La sección **Productos** consume la información mediante `httpResource`.
+JSON Server expone los productos en `http://localhost:8080/productos` y persiste los cambios en `db.json`.
 
-Características:
+**Terminal 2 — aplicación Angular:**
 
-- Estado de carga ("Cargando...")
-- Actualización reactiva
-- Manejo visual de errores cuando el servidor no responde
+```bash
+npm start
+```
 
----
+Abre `http://localhost:4200`. El proxy de `proxy.conf.json` redirige las peticiones de `/api` a la API local.
 
-## Creación de Productos (POST)
+## Verificación
 
-El formulario **Nuevo Producto** envía información mediante peticiones HTTP POST.
+Ejecuta las pruebas unitarias del servicio HTTP:
 
-Al crear correctamente un registro:
+```bash
+npm test
+```
 
-- JSON Server genera automáticamente un ID.
-- La interfaz muestra el mensaje:
+Vitest observa los archivos en modo interactivo; en CI termina al completar la ejecución. Para comprobar el build de producción:
+
+```bash
+npm run build
+```
+
+## Estructura principal
 
 ```text
-Creado con id [ID_GENERADO]
+src/app/producto.model.ts                 Modelo del producto
+src/app/producto.service.ts                Operaciones HTTP
+src/app/producto.service.spec.ts           Pruebas del servicio
+src/app/lista-productos.component.ts       Lista y eliminación
+src/app/nuevo-producto.component.ts         Formulario de creación
+db.json                                    Datos locales para JSON Server
+proxy.conf.json                            Proxy de desarrollo para /api
 ```
 
----
-
-## Eliminación de Productos (DELETE)
-
-Cada producto posee un botón **Eliminar**.
-
-Después de una eliminación exitosa se ejecuta:
-
-```ts
-this.productos.reload()
-```
-
-permitiendo actualizar automáticamente la lista sin recargar la página.
-
----
-
-
-
-# Tecnologías Utilizadas
-
-- Angular 22
-- TypeScript
-- Signals
-- httpResource
-- JSON Server
-- HTTP Client
-- Proxy de Angular
-- CSS (Flexbox y Grid)
-
----
-
-# Objetivo de la Práctica
-
-Implementar una aplicación Angular moderna capaz de consumir un servicio REST mediante operaciones **CRUD**, aplicando arquitectura reactiva con **Signals** y **httpResource**, además de resolver los problemas de **CORS** utilizando un **proxy de desarrollo**.
+Este proyecto es una práctica local: JSON Server proporciona una API simulada y no incluye autenticación ni un backend de producción.
