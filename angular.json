@@ -41,6 +41,13 @@
             "development": { "buildTarget": "consumo-rest:build:development" }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "buildTarget": "consumo-rest:build:development"
+          }
         }
       }
     }
