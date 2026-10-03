@@ -75,3 +75,7 @@ proxy.conf.json                            Proxy de desarrollo para /api
 ```
 
 Este proyecto es una práctica local: JSON Server proporciona una API simulada y no incluye autenticación ni un backend de producción.
+
+## Licencia
+
+Este proyecto se distribuye bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE).
